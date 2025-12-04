@@ -1,0 +1,22 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+alice:
+  event: christmas_2024
+  name: Alice Johnson
+  email: alice@example.com
+  assigned_to_id:
+  is_organizer: true
+
+bob:
+  event: christmas_2024
+  name: Bob Smith
+  email: bob@example.com
+  assigned_to_id:
+  is_organizer: false
+
+charlie:
+  event: new_year_2025
+  name: Charlie Brown
+  email: charlie@example.com
+  assigned_to_id:
+  is_organizer: false

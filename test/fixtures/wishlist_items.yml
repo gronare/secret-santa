@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+alice_book:
+  participant: alice
+  description: A nice fantasy book series
+  url: https://example.com/book
+  priority: 5
+
+alice_coffee:
+  participant: alice
+  description: Gourmet coffee beans
+  url:
+  priority: 3
+
+bob_gadget:
+  participant: bob
+  description: Smart home gadget
+  url: https://example.com/gadget
+  priority: 4

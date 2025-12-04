@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+alice_valid_token:
+  participant: alice
+  token: valid_token_alice_123456789
+  expires_at: <%= 1.day.from_now %>
+  used_at:
+
+bob_expired_token:
+  participant: bob
+  token: expired_token_bob_987654321
+  expires_at: <%= 1.day.ago %>
+  used_at:
