@@ -1,0 +1,30 @@
+Secret Santa Event Created!
+========================================
+
+Hi <%= @event.organizer_name %>,
+
+Your Secret Santa event "<%= @event.name %>" has been created successfully!
+
+Event Details:
+<% if @event.event_date %>
+Date: <%= @event.event_date.strftime("%B %d, %Y") %>
+<% end %>
+<% if @event.location %>
+Location: <%= @event.location %>
+<% end %>
+<% if @event.budget %>
+Budget: <%= @event.budget %>
+<% end %>
+
+Next Steps:
+1. Customize your event settings (theme, messages, requirements)
+2. Add all participants
+3. Review and launch your event
+
+Manage Your Event:
+<%= @magic_link %>
+
+This magic link will expire in 24 hours. You can request a new one anytime.
+
+---
+Secret Santa by secretsanta.gronare.com

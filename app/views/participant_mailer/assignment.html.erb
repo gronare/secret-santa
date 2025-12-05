@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #fef2f2, #f0fdf4); padding: 30px; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #991b1b; margin: 0;">🎅 Your Secret Santa Assignment</h1>
+  </div>
+
+  <p>Hi <%= @participant.name %>,</p>
+
+  <p>You're the Secret Santa for <strong>"<%= @event.name %>"</strong>!</p>
+
+  <div style="background: #dcfce7; border: 2px solid #16a34a; padding: 25px; border-radius: 8px; margin: 30px 0; text-align: center;">
+    <p style="margin: 0 0 10px 0; font-size: 14px; color: #166534;">You're buying a gift for:</p>
+    <h2 style="color: #15803d; margin: 0; font-size: 32px;">🎁 <%= @assigned_person.name %></h2>
+  </div>
+
+  <% if @event.custom_message.present? %>
+    <div style="background: #dbeafe; padding: 20px; border-left: 4px solid #3b82f6; margin: 20px 0;">
+      <p style="margin: 0; font-style: italic;"><%= simple_format(@event.custom_message) %></p>
+    </div>
+  <% end %>
+
+  <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #374151;">Event Details:</h3>
+    <ul style="list-style: none; padding: 0;">
+      <% if @event.event_date %>
+        <li style="margin: 10px 0;">📅 <strong>Date:</strong> <%= @event.event_date.strftime("%B %d, %Y") %></li>
+      <% end %>
+      <% if @event.location %>
+        <li style="margin: 10px 0;">📍 <strong>Location:</strong> <%= @event.location %></li>
+      <% end %>
+      <% if @event.budget %>
+        <li style="margin: 10px 0;">💰 <strong>Budget:</strong> <%= @event.budget %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div style="background: #fef3c7; border-left: 4px solid #eab308; padding: 20px; margin: 20px 0;">
+    <p style="margin: 0;"><strong>🤫 Remember:</strong> Keep your assignment secret! Part of the fun is the surprise.</p>
+  </div>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="<%= @magic_link %>" style="background: #16a34a; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+      View Wishlist & Details
+    </a>
+  </div>
+
+  <p style="font-size: 14px; color: #6b7280;">
+    Click the link above to see <%= @assigned_person.name %>'s wishlist and add your own gift ideas for others to see.
+  </p>
+
+  <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+
+  <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+    Secret Santa by <%= link_to "secretsanta.gronare.com", root_url, style: "color: #3b82f6;" %>
+  </p>
+</body>
+</html>
