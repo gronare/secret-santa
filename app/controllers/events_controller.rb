@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [ :show, :organize, :draw_assignments ]
+  before_action :set_event, only: [ :show, :organize, :launch, :draw_assignments ]
 
   def new
     @event = Event.new
@@ -36,17 +36,31 @@ class EventsController < ApplicationController
     @participants = @event.participants.strict_loading(false).order(created_at: :asc)
   end
 
-  def draw_assignments
-    # HEY pattern: Service object handles complex business logic
+  def launch
+    unless @event.draft?
+      redirect_to organize_event_path(@event), alert: "Event has already been launched."
+      return
+    end
+
     SecretSanta::AssignmentService.new(@event).call
+    @event.launch!
 
     respond_to do |format|
-      format.html { redirect_to organize_event_path(@event), notice: "Assignments drawn! Participants can now view their assignments." }
+      format.html { redirect_to organize_event_path(@event), notice: "Event launched! Invitations will be sent to participants." }
       format.turbo_stream
     end
   rescue SecretSanta::AssignmentService::InsufficientParticipantsError => e
     redirect_to organize_event_path(@event), alert: e.message
-  rescue SecretSanta::AssignmentService::AlreadyAssignedError => e
+  end
+
+  def draw_assignments
+    SecretSanta::AssignmentService.new(@event).call
+
+    respond_to do |format|
+      format.html { redirect_to organize_event_path(@event), notice: "Assignments reshuffled!" }
+      format.turbo_stream
+    end
+  rescue SecretSanta::AssignmentService::InsufficientParticipantsError => e
     redirect_to organize_event_path(@event), alert: e.message
   end
 
