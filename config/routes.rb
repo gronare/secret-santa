@@ -4,8 +4,10 @@ Rails.application.routes.draw do
   resources :events, only: [ :new, :create, :show ] do
     member do
       get :organize
+      get :dashboard
       post :draw_assignments
       post :launch
+      post :send_reminder
     end
 
     resource :settings, controller: "event_settings", only: [ :edit, :update ]

@@ -29,8 +29,14 @@ class SessionsController < ApplicationController
     if @participant
       session[:participant_id] = @participant.id
       Current.participant = @participant
+      @participant.update_column(:last_sign_in_at, Time.current)
 
-      redirect_path = @participant.organizer? ? organize_event_path(@participant.event) : event_path(@participant.event)
+      if @participant.organizer?
+        redirect_path = @participant.event.active? ? dashboard_event_path(@participant.event) : organize_event_path(@participant.event)
+      else
+        redirect_path = event_path(@participant.event)
+      end
+
       redirect_to redirect_path, notice: "Successfully signed in!"
     else
       redirect_to root_path, alert: "Invalid or expired magic link. Please request a new one."

@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [ :show, :organize, :launch, :draw_assignments ]
+  before_action :set_event, only: [ :show, :organize, :dashboard, :launch, :draw_assignments, :send_reminder ]
 
   def new
     @event = Event.new
@@ -32,13 +32,24 @@ class EventsController < ApplicationController
   end
 
   def organize
-    # Modern Rails: Strict loading prevents N+1, includes for eager loading
     @participants = @event.participants.strict_loading(false).order(created_at: :asc)
+  end
+
+  def dashboard
+    @participants = @event.participants.includes(:wishlist_items).order(created_at: :asc)
+  end
+
+  def send_reminder
+    participant = @event.participants.find(params[:participant_id])
+    ParticipantMailer.invitation(participant).deliver_later
+    participant.update_column(:invitation_sent_at, Time.current)
+
+    redirect_to dashboard_event_path(@event), notice: "Reminder sent to #{participant.name}!"
   end
 
   def launch
     unless @event.draft?
-      redirect_to organize_event_path(@event), alert: "Event has already been launched."
+      redirect_to dashboard_event_path(@event), alert: "Event has already been launched."
       return
     end
 
@@ -46,11 +57,12 @@ class EventsController < ApplicationController
     @event.launch!
 
     @event.participants.each do |participant|
+      participant.update_column(:invitation_sent_at, Time.current)
       ParticipantMailer.invitation(participant).deliver_later
     end
 
     respond_to do |format|
-      format.html { redirect_to organize_event_path(@event), notice: "Event launched! Invitations sent to all participants." }
+      format.html { redirect_to dashboard_event_path(@event), notice: "Event launched! Invitations sent to all participants." }
       format.turbo_stream
     end
   rescue SecretSanta::AssignmentService::InsufficientParticipantsError => e
