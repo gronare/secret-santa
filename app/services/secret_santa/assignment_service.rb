@@ -19,7 +19,8 @@ module SecretSanta
     private
 
     def validate!
-      raise InsufficientParticipantsError, "Need at least 3 participants" if @participants.size < 3
+      count = @event.participants.count
+      raise InsufficientParticipantsError, "Need at least 3 participants" if count < 3
     end
 
     def clear_existing_assignments!
