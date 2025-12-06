@@ -14,8 +14,12 @@ Rails.application.routes.draw do
     resources :participants, only: [ :create, :destroy ]
   end
 
+  resources :wishlist_items, only: [ :index, :create, :destroy ]
+
   # Authentication routes using magic links
-  resource :session, only: [ :new, :create, :destroy ]
+  resource :session, only: [ :new, :create, :destroy ] do
+    post :select_event, on: :collection
+  end
   get "auth/:token", to: "sessions#authenticate", as: :auth
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

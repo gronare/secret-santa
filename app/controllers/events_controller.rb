@@ -1,5 +1,6 @@
 class EventsController < ApplicationController
   before_action :set_event, only: [ :show, :organize, :dashboard, :launch, :draw_assignments, :send_reminder ]
+  before_action :require_organizer, only: [ :organize, :dashboard, :launch, :draw_assignments, :send_reminder ]
 
   def new
     @event = Event.new
@@ -9,12 +10,19 @@ class EventsController < ApplicationController
     @event = Event.new(event_params)
 
     if @event.save
+      # Find or create user for this email
+      user = User.find_or_create_by!(email: @event.organizer_email)
+
+      # Create participant for this event
       organizer = @event.participants.create!(
+        user: user,
         name: @event.organizer_name,
         email: @event.organizer_email,
         is_organizer: true
       )
 
+      session[:user_id] = user.id
+      session[:participant_id] = organizer.id
       Current.participant = organizer
       Current.event = @event
 
@@ -29,6 +37,13 @@ class EventsController < ApplicationController
   def show
     # HEY pattern: Access Current directly, no helper method
     @participant = Current.participant
+
+    # Eager load wishlist items for both participant and their assignment
+    if @participant
+      @participant = @event.participants
+        .includes(:wishlist_items, assigned_to: :wishlist_items)
+        .find(@participant.id)
+    end
   end
 
   def organize
@@ -81,6 +96,12 @@ class EventsController < ApplicationController
   end
 
   private
+
+  def require_organizer
+    unless Current.participant&.organizer? && Current.participant.event_id == @event.id
+      redirect_to root_path, alert: "You don't have permission to access this page."
+    end
+  end
 
   def set_event
     action_name = params[:action].to_sym

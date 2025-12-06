@@ -1,8 +1,13 @@
 class ParticipantsController < ApplicationController
   before_action :set_event
+  before_action :require_organizer
 
   def create
-    @participant = @event.participants.build(participant_params)
+    # Find or create user for this email
+    user = User.find_or_create_by!(email: participant_params[:email])
+
+    # Build participant with user
+    @participant = @event.participants.build(participant_params.merge(user: user))
 
     if @participant.save
       respond_to do |format|
@@ -33,8 +38,15 @@ class ParticipantsController < ApplicationController
 
   private
 
+  def require_organizer
+    unless Current.participant&.organizer? && Current.participant.event_id == @event.id
+      redirect_to root_path, alert: "You don't have permission to access this page."
+    end
+  end
+
   def set_event
     @event = Event.find_by!(slug: params[:event_id])
+    Current.event = @event
   end
 
   def participant_params

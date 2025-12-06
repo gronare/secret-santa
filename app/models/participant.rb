@@ -1,5 +1,6 @@
 class Participant < ApplicationRecord
   # Associations
+  belongs_to :user
   belongs_to :event, touch: true
   belongs_to :assigned_to, class_name: "Participant", optional: true
   has_many :login_tokens, dependent: :destroy
@@ -12,12 +13,6 @@ class Participant < ApplicationRecord
   validates :name, presence: true
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :email, uniqueness: { scope: :event_id }
-
-  # Modern Rails: generates_token_for for magic link authentication
-  generates_token_for :magic_link, expires_in: 24.hours do
-    # Include email in token to prevent reuse if email changes
-    email
-  end
 
   # Scopes
   scope :organizers, -> { where(is_organizer: true) }

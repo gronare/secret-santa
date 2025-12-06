@@ -1,46 +1,81 @@
-<div class="flex-1 flex flex-col items-center justify-center">
-  <!-- Hero Section -->
-  <div class="text-center max-w-4xl px-4">
-    <!-- Icon/Logo -->
-    <div class="mb-8">
-      <div class="inline-block text-8xl">🎁</div>
-    </div>
+<div class="flex-1 flex flex-col items-center justify-center px-4 py-12">
+    <!-- Hero Section -->
+    <div class="text-center max-w-4xl w-full mb-12">
+      <!-- Icon/Logo -->
+      <div class="mb-6">
+        <div class="inline-block text-7xl">🎁</div>
+      </div>
 
-    <!-- Heading -->
-    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-      Secret Santa Made Simple
-    </h1>
-
-    <!-- Subheading -->
-    <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto">
-      Organize your gift exchange effortlessly. Create an event, invite participants, and let the magic happen.
-    </p>
-
-    <!-- CTA Button -->
-    <div class="mb-12">
-      <%= link_to new_event_path, class: "inline-block bg-red-600 hover:bg-red-700 text-white font-semibold text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105" do %>
-        Create Your Secret Santa
+      <% if Current.participant %>
+        <!-- Logged in user greeting -->
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Welcome back, <%= Current.participant.name %>!
+        </h1>
+        <p class="text-lg md:text-xl text-gray-600 mb-8">
+          Use the navigation above to access your event, or create a new one below.
+        </p>
+      <% else %>
+        <!-- Default hero -->
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Secret Santa Made Simple
+        </h1>
+        <p class="text-lg md:text-xl text-gray-600 mb-8">
+          Organize your gift exchange effortlessly. Create an event, invite participants, and let the magic happen.
+        </p>
       <% end %>
+
+      <!-- CTA Button -->
+      <div class="mb-8">
+        <%= link_to new_event_path, class: "inline-block bg-red-600 hover:bg-red-700 text-white font-semibold text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105" do %>
+          Create New Event
+        <% end %>
+      </div>
     </div>
+
+    <!-- Login Section (only show if not logged in) -->
+    <% unless Current.participant %>
+      <div class="w-full max-w-md mb-12">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Already Have an Event?</h2>
+          <p class="text-gray-600 mb-6">Enter your email to receive a login link</p>
+
+          <%= form_with url: session_path, method: :post, class: "space-y-4" do |f| %>
+            <div>
+              <%= f.email_field :email,
+                  placeholder: "your@email.com",
+                  required: true,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg" %>
+            </div>
+
+            <%= f.submit "Send Login Link",
+                class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors cursor-pointer" %>
+          <% end %>
+
+          <p class="text-sm text-gray-500 mt-4 text-center">
+            We'll send a magic link to your email for secure access
+          </p>
+        </div>
+      </div>
+    <% end %>
 
     <!-- Features -->
-    <div class="grid md:grid-cols-3 gap-8 mt-16 text-left">
+    <div class="grid md:grid-cols-3 gap-6 max-w-5xl w-full">
       <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="text-4xl mb-4">✨</div>
+        <div class="text-4xl mb-3">✨</div>
         <h3 class="text-lg font-semibold mb-2">Easy Setup</h3>
         <p class="text-gray-600">Create your event in minutes. Add participants, set budget and date.</p>
       </div>
 
       <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="text-4xl mb-4">🔐</div>
+        <div class="text-4xl mb-3">🔐</div>
         <h3 class="text-lg font-semibold mb-2">Secure & Private</h3>
         <p class="text-gray-600">Passwordless login with magic links. Your assignments stay secret.</p>
       </div>
 
       <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="text-4xl mb-4">🎨</div>
-        <h3 class="text-lg font-semibold mb-2">Customizable</h3>
-        <p class="text-gray-600">Personalize your event with themes and custom messages.</p>
+        <div class="text-4xl mb-3">🎨</div>
+        <h3 class="text-lg font-semibold mb-2">Wishlist Management</h3>
+        <p class="text-gray-600">Share gift ideas with links and prices. Make shopping easy for your Secret Santa.</p>
       </div>
     </div>
   </div>

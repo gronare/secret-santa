@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_223943) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_011219) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,15 +60,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_223943) do
     t.datetime "last_sign_in_at"
     t.string "name"
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["assigned_to_id"], name: "index_participants_on_assigned_to_id"
     t.index ["event_id", "email"], name: "index_participants_on_event_id_and_email", unique: true
     t.index ["event_id"], name: "index_participants_on_event_id"
+    t.index ["user_id"], name: "index_participants_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   create_table "wishlist_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.bigint "participant_id", null: false
+    t.string "price"
     t.integer "priority"
     t.datetime "updated_at", null: false
     t.string "url"
@@ -77,5 +87,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_223943) do
 
   add_foreign_key "login_tokens", "participants"
   add_foreign_key "participants", "events"
+  add_foreign_key "participants", "users"
   add_foreign_key "wishlist_items", "participants"
 end

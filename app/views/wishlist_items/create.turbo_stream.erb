@@ -1,0 +1,11 @@
+<%= turbo_stream.prepend "wishlist-items" do %>
+  <%= render "wishlist_item", item: @wishlist_item %>
+<% end %>
+
+<%= turbo_stream.replace "wishlist-form" do %>
+  <%= render "form", wishlist_item: WishlistItem.new %>
+<% end %>
+
+<%= turbo_stream.update "wishlist-count" do %>
+  <%= @participant.wishlist_items.count %>
+<% end %>

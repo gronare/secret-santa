@@ -1,0 +1,5 @@
+<%= turbo_stream.remove dom_id(@wishlist_item) %>
+
+<%= turbo_stream.update "wishlist-count" do %>
+  <%= @participant.wishlist_items.count %>
+<% end %>

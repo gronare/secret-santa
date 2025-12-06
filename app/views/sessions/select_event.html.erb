@@ -1,0 +1,49 @@
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Select Your Event</h1>
+    <p class="text-gray-600 mb-8">You're participating in multiple Secret Santa events. Choose which one to access:</p>
+
+    <div class="space-y-4">
+      <% @participants.each do |participant| %>
+        <%= form_with url: select_event_session_path, method: :post do |f| %>
+          <%= f.hidden_field :participant_id, value: participant.id %>
+
+          <button type="submit" class="w-full text-left bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 hover:border-blue-500 rounded-lg p-6 transition-all">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                  <%= participant.event.name %>
+                </h3>
+                <div class="text-sm text-gray-600 space-y-1">
+                  <% if participant.organizer? %>
+                    <p class="flex items-center gap-2">
+                      <span class="inline-block bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-semibold">Organizer</span>
+                    </p>
+                  <% end %>
+                  <% if participant.event.event_date %>
+                    <p>📅 <%= participant.event.event_date.strftime("%B %d, %Y") %></p>
+                  <% end %>
+                  <% if participant.event.location %>
+                    <p>📍 <%= participant.event.location %></p>
+                  <% end %>
+                  <p>
+                    <span class="inline-block <%= participant.event.active? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-2 py-0.5 rounded text-xs font-semibold">
+                      <%= participant.event.status.titleize %>
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div class="text-gray-400">
+                →
+              </div>
+            </div>
+          </button>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="mt-8 pt-6 border-t">
+      <%= link_to "Create a New Event", new_event_path, class: "inline-block text-blue-600 hover:text-blue-800 font-medium" %>
+    </div>
+  </div>
+</div>

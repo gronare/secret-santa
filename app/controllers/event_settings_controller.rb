@@ -1,5 +1,6 @@
 class EventSettingsController < ApplicationController
   before_action :set_event
+  before_action :require_organizer
 
   def edit
   end
@@ -16,6 +17,12 @@ class EventSettingsController < ApplicationController
   end
 
   private
+
+  def require_organizer
+    unless Current.participant&.organizer? && Current.participant.event_id == @event.id
+      redirect_to root_path, alert: "You don't have permission to access this page."
+    end
+  end
 
   def set_event
     @event = Event.includes(:participants).find_by!(slug: params[:event_id])

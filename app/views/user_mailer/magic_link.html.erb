@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #dbeafe, #fef2f2); padding: 30px; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #1e40af; margin: 0;">🔐 Your Login Link</h1>
+  </div>
+
+  <p>Hi there,</p>
+
+  <p>You requested a login link for your Secret Santa events.</p>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="<%= @magic_link %>" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+      Sign In to Your Events
+    </a>
+  </div>
+
+  <p style="font-size: 14px; color: #6b7280;">
+    Click the button above to access your Secret Santa events. This link will expire in 24 hours.
+  </p>
+
+  <p style="font-size: 14px; color: #6b7280;">
+    If you didn't request this link, you can safely ignore this email.
+  </p>
+
+  <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+
+  <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+    Secret Santa by <%= link_to "secretsanta.gronare.com", root_url, style: "color: #3b82f6;" %>
+  </p>
+</body>
+</html>

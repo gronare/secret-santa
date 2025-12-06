@@ -4,7 +4,7 @@ class ParticipantMailer < ApplicationMailer
   def invitation(participant)
     @participant = participant
     @event = participant.event
-    @magic_link = auth_url(@participant.generate_token_for(:magic_link))
+    @magic_link = auth_url(participant.user.generate_token_for(:magic_link))
 
     mail(
       to: @participant.email,
@@ -16,7 +16,7 @@ class ParticipantMailer < ApplicationMailer
     @participant = participant
     @event = participant.event
     @assigned_person = participant.assigned_participant
-    @magic_link = auth_url(@participant.generate_token_for(:magic_link))
+    @magic_link = auth_url(participant.user.generate_token_for(:magic_link))
 
     mail(
       to: @participant.email,
