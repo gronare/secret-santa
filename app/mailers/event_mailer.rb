@@ -4,7 +4,7 @@ class EventMailer < ApplicationMailer
   def organizer_welcome(event)
     @event = event
     @organizer = event.organizer
-    @magic_link = auth_url(@organizer.generate_token_for(:magic_link))
+    @magic_link = auth_url(@organizer.user.generate_token_for(:magic_link))
 
     mail(
       to: @event.organizer_email,

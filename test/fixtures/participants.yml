@@ -2,28 +2,29 @@
 
 alice:
   event: christmas_2024
+  user: alice
   name: Alice Johnson
   email: alice@example.com
-  assigned_to_id:
   is_organizer: true
 
 bob:
   event: christmas_2024
+  user: bob
   name: Bob Smith
   email: bob@example.com
-  assigned_to_id:
   is_organizer: false
 
 carol:
   event: christmas_2024
+  user: carol
   name: Carol White
   email: carol@example.com
-  assigned_to_id:
   is_organizer: false
 
 charlie:
   event: new_year_2025
+  user: charlie
   name: Charlie Brown
   email: charlie@example.com
-  assigned_to_id:
   is_organizer: false
+

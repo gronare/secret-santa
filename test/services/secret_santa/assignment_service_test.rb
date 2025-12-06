@@ -69,9 +69,14 @@ module SecretSanta
       )
 
       10.times do |i|
-        event.participants.create!(
-          name: "Person #{i}",
+        user = User.create!(
           email: "person#{i}@example.com"
+        )
+
+        event.participants.create!(
+          user: user,
+          name: "Person #{i}",
+          email: user.email
         )
       end
 
