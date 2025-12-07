@@ -1,180 +1,179 @@
-<div class="max-w-6xl mx-auto">
-  <!-- Event Header -->
-  <%
-    # Theme configuration
-    theme_config = {
-      "christmas" => { emoji: "🎄", gradient: "from-red-50 via-green-50 to-red-50", border: "border-red-200" },
-      "hanukkah" => { emoji: "🕎", gradient: "from-blue-50 via-white to-blue-50", border: "border-blue-200" },
-      "winter" => { emoji: "❄️", gradient: "from-blue-50 via-slate-50 to-blue-50", border: "border-blue-200" },
-      "generic" => { emoji: "🎁", gradient: "from-gray-50 via-gray-100 to-gray-50", border: "border-gray-200" }
-    }
-    theme = theme_config[@event.theme] || theme_config["christmas"]
-  %>
-  <div class="bg-gradient-to-r <%= theme[:gradient] %> border-2 <%= theme[:border] %> rounded-lg shadow-lg p-8 mb-8">
-    <div class="flex items-start justify-between">
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="text-4xl"><%= theme[:emoji] %></div>
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900"><%= @event.name %></h1>
-            <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mt-1">
-              Active
-            </span>
-          </div>
-        </div>
-
-        <% if @event.custom_message.present? %>
-          <div class="bg-white/60 backdrop-blur-sm border border-gray-200 rounded-lg p-4 mb-4">
-            <p class="text-gray-800 italic">"<%= @event.custom_message %>"</p>
-          </div>
-        <% end %>
-
-        <div class="text-gray-700 space-y-1">
-          <% if @event.event_date %>
-            <p>📅 <%= @event.event_date.strftime("%B %d, %Y") %></p>
-          <% end %>
-          <% if @event.location %>
-            <p>📍 <%= @event.location %></p>
-          <% end %>
-          <% if @event.budget %>
-            <p>💰 <%= @event.budget %></p>
-          <% end %>
-          <p>🚀 Launched <%= time_ago_in_words(@event.launched_at) %> ago</p>
+<!-- Event Header -->
+<%
+  # Theme configuration
+  theme_config = {
+    "christmas" => { emoji: "🎄", gradient: "from-red-50 via-green-50 to-red-50", border: "border-red-200" },
+    "hanukkah" => { emoji: "🕎", gradient: "from-blue-50 via-white to-blue-50", border: "border-blue-200" },
+    "winter" => { emoji: "❄️", gradient: "from-blue-50 via-slate-50 to-blue-50", border: "border-blue-200" },
+    "generic" => { emoji: "🎁", gradient: "from-gray-50 via-gray-100 to-gray-50", border: "border-gray-200" }
+  }
+  theme = theme_config[@event.theme] || theme_config["christmas"]
+%>
+<div class="bg-gradient-to-r <%= theme[:gradient] %> border-2 <%= theme[:border] %> rounded-lg shadow-lg p-8 mb-8">
+  <div class="flex items-start justify-between">
+    <div class="flex-1">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="text-4xl"><%= theme[:emoji] %></div>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900"><%= @event.name %></h1>
+          <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold mt-1">
+            Active
+          </span>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Stats Overview -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-    <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-3xl font-bold text-gray-900"><%= @participants.count %></div>
-      <div class="text-sm text-gray-600">Total Participants</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-3xl font-bold text-green-600"><%= @participants.where.not(last_sign_in_at: nil).count %></div>
-      <div class="text-sm text-gray-600">Signed In</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-3xl font-bold text-blue-600"><%= @participants.joins(:wishlist_items).distinct.count %></div>
-      <div class="text-sm text-gray-600">With Wishlists</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
-      <div class="text-3xl font-bold text-yellow-600"><%= @participants.where(last_sign_in_at: nil).count %></div>
-      <div class="text-sm text-gray-600">Not Engaged</div>
-    </div>
-  </div>
-
-  <!-- Participants Table -->
-  <div class="bg-white rounded-lg shadow-lg p-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Participant Status</h2>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr class="bg-gray-50">
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Participant
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Last Sign In
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Wishlist Items
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Invitation Sent
-            </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% @participants.each do |participant| %>
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div>
-                  <div class="font-medium text-gray-900">
-                    <%= participant.name %>
-                    <% if participant.organizer? %>
-                      <span class="ml-2 inline-block bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-semibold">
-                        Organizer
-                      </span>
-                      <% unless @event.organizer_participates %>
-                        <span class="ml-1 inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-semibold">
-                          Not Participating
-                        </span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <div class="text-sm text-gray-500"><%= participant.email %></div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <% if participant.last_sign_in_at %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    ✓ Active
-                  </span>
-                <% else %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    ○ Pending
-                  </span>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <% if participant.last_sign_in_at %>
-                  <%= time_ago_in_words(participant.last_sign_in_at) %> ago
-                <% else %>
-                  <span class="text-gray-400">Never</span>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <% wishlist_count = participant.wishlist_items.count %>
-                <% if wishlist_count > 0 %>
-                  <span class="text-green-600 font-medium"><%= wishlist_count %> items</span>
-                <% else %>
-                  <span class="text-gray-400">None yet</span>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <% if participant.invitation_sent_at %>
-                  <%= time_ago_in_words(participant.invitation_sent_at) %> ago
-                <% else %>
-                  <span class="text-gray-400">Not sent</span>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                <% unless participant.organizer? %>
-                  <%= button_to "Send Reminder", send_reminder_event_path(@event, participant_id: participant.id), method: :post, class: "text-blue-600 hover:text-blue-800 font-medium" %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Actions Section -->
-  <div class="bg-white rounded-lg shadow-lg p-8 mt-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Organizer Actions</h2>
-
-    <div class="space-y-4">
-      <% unless @event.active? || @event.completed? %>
-        <%= button_to "Reshuffle Assignments", draw_assignments_event_path(@event), method: :post, class: "w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors", data: { turbo_confirm: "This will create new assignments for everyone. Continue?" } %>
-      <% else %>
-        <div class="bg-gray-50 border border-gray-200 text-gray-600 px-4 py-3 rounded-lg text-center">
-          🔒 Assignments are locked for active events
+      <% if @event.custom_message.present? %>
+        <div class="bg-white/60 backdrop-blur-sm border border-gray-200 rounded-lg p-4 mb-4">
+          <p class="text-gray-800 italic">"<%= @event.custom_message %>"</p>
         </div>
       <% end %>
 
-      <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" onclick="alert('Send reminder to all inactive participants')">
-        Send Reminders to All Pending
-      </button>
+      <div class="text-gray-700 space-y-1">
+        <% if @event.event_date %>
+          <p>📅 <%= @event.event_date.strftime("%B %d, %Y") %></p>
+        <% end %>
+        <% if @event.location %>
+          <p>📍 <%= @event.location %></p>
+        <% end %>
+        <% if @event.budget %>
+          <p>💰 <%= @event.budget %></p>
+        <% end %>
+        <p>🚀 Launched <%= time_ago_in_words(@event.launched_at) %> ago</p>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="text-3xl font-bold text-gray-900"><%= @participants.count %></div>
+    <div class="text-sm text-gray-600">Total Participants</div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="text-3xl font-bold text-green-600"><%= @participants.where.not(last_sign_in_at: nil).count %></div>
+    <div class="text-sm text-gray-600">Signed In</div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="text-3xl font-bold text-blue-600"><%= @participants.joins(:wishlist_items).distinct.count %></div>
+    <div class="text-sm text-gray-600">With Wishlists</div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="text-3xl font-bold text-yellow-600"><%= @participants.where(last_sign_in_at: nil).count %></div>
+    <div class="text-sm text-gray-600">Not Engaged</div>
+  </div>
+</div>
+
+<!-- Participants Table -->
+<div class="bg-white rounded-lg shadow-lg p-8">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Participant Status</h2>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead>
+        <tr class="bg-gray-50">
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Participant
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Status
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Last Sign In
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Wishlist Items
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Invitation Sent
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @participants.each do |participant| %>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div>
+                <div class="font-medium text-gray-900">
+                  <%= participant.name %>
+                  <% if participant.organizer? %>
+                    <span class="ml-2 inline-block bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-semibold">
+                      Organizer
+                    </span>
+                    <% unless @event.organizer_participates %>
+                      <span class="ml-1 inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-semibold">
+                        Not Participating
+                      </span>
+                    <% end %>
+                  <% end %>
+                </div>
+                <div class="text-sm text-gray-500"><%= participant.email %></div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <% if participant.last_sign_in_at %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  ✓ Active
+                </span>
+              <% else %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  ○ Pending
+                </span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <% if participant.last_sign_in_at %>
+                <%= time_ago_in_words(participant.last_sign_in_at) %> ago
+              <% else %>
+                <span class="text-gray-400">Never</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <% wishlist_count = participant.wishlist_items.count %>
+              <% if wishlist_count > 0 %>
+                <span class="text-green-600 font-medium"><%= wishlist_count %> items</span>
+              <% else %>
+                <span class="text-gray-400">None yet</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <% if participant.invitation_sent_at %>
+                <%= time_ago_in_words(participant.invitation_sent_at) %> ago
+              <% else %>
+                <span class="text-gray-400">Not sent</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+              <% unless participant.organizer? %>
+                <%= button_to "Send Reminder", send_reminder_event_path(@event, participant_id: participant.id), method: :post, class: "text-blue-600 hover:text-blue-800 font-medium" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Actions Section -->
+<div class="bg-white rounded-lg shadow-lg p-8 mt-8">
+  <h2 class="text-2xl font-bold text-gray-900 mb-4">Organizer Actions</h2>
+
+  <div class="space-y-4">
+    <% unless @event.active? || @event.completed? %>
+      <%= button_to "Reshuffle Assignments", draw_assignments_event_path(@event), method: :post, class: "w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors", data: { turbo_confirm: "This will create new assignments for everyone. Continue?" } %>
+    <% else %>
+      <div class="bg-gray-50 border border-gray-200 text-gray-600 px-4 py-3 rounded-lg text-center">
+        🔒 Assignments are locked for active events
+      </div>
+    <% end %>
+
+    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" onclick="alert('Send reminder to all inactive participants')">
+      Send Reminders to All Pending
+    </button>
+  </div>
+</div>
+
