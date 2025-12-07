@@ -7,7 +7,7 @@ class EventSettingsController < ApplicationController
     # Redirect to dashboard if event is active or completed
     if @event.active? || @event.completed?
       redirect_to dashboard_event_path(@event)
-      return
+      nil
     end
   end
 
