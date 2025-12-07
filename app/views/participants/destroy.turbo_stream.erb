@@ -12,6 +12,22 @@
   <% end %>
 <% end %>
 
+<%= turbo_stream.update "launch-checklist" do %>
+  <div class="flex items-center gap-2 text-sm">
+    <% if @event.participating_count >= 3 %>
+      <span class="text-green-600">✓</span>
+      <span class="text-gray-700">At least 3 participants added</span>
+    <% else %>
+      <span class="text-gray-400">○</span>
+      <span class="text-gray-500">Need <%= 3 - @event.participating_count %> more participant<%= 's' if (3 - @event.participating_count) != 1 %></span>
+    <% end %>
+  </div>
+  <div class="flex items-center gap-2 text-sm">
+    <span class="text-green-600">✓</span>
+    <span class="text-gray-700">Event settings configured</span>
+  </div>
+<% end %>
+
 <%= turbo_stream.update "draw-actions" do %>
   <% if @event.ready_to_launch? %>
     <%= button_to "🚀 Launch Event", launch_event_path(@event), method: :post, class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors", data: { turbo_confirm: "Ready to launch? This will draw assignments and send invitations to all participants." } %>
