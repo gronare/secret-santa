@@ -96,9 +96,11 @@ class EventsController < ApplicationController
     @event.launch!
 
     # Only send invitations to participants with assignments (excludes non-participating organizer)
-    @event.participants.with_assignments.each do |participant|
+    # Stagger emails to respect Resend rate limit (2 emails/second)
+    @event.participants.with_assignments.each_with_index do |participant, index|
       participant.update_column(:invitation_sent_at, Time.current)
-      ParticipantMailer.invitation(participant).deliver_later
+      # Delay each email by 1 second to stay under rate limit
+      ParticipantMailer.invitation(participant).deliver_later(wait: index.seconds)
     end
 
     respond_to do |format|

@@ -61,6 +61,9 @@ Rails.application.configure do
     protocol: "https"
   }
 
+  # SMTP configuration
+  # Note: Resend has a rate limit of 2 emails/second on free tier
+  # Bulk email sending (e.g., event launch) uses staggered delays to respect this limit
   config.action_mailer.smtp_settings = {
     address: ENV.fetch("SMTP_ADDRESS", "postal.gronare.com"),
     port: ENV.fetch("SMTP_PORT", 587).to_i,
