@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [ :show, :organize, :dashboard, :launch, :draw_assignments, :send_reminder ]
-  before_action :require_organizer, only: [ :organize, :dashboard, :launch, :draw_assignments, :send_reminder ]
+  before_action :set_event, only: [ :show, :organize, :dashboard, :launch, :draw_assignments, :send_reminder, :send_reminders_to_pending ]
+  before_action :require_organizer, only: [ :organize, :dashboard, :launch, :draw_assignments, :send_reminder, :send_reminders_to_pending ]
   before_action :prevent_if_active, only: [ :draw_assignments ]
 
   def new
@@ -84,6 +84,15 @@ class EventsController < ApplicationController
     participant.update_column(:invitation_sent_at, Time.current)
 
     redirect_to dashboard_event_path(@event), notice: "Reminder sent to #{participant.name}!"
+  end
+
+  def send_reminders_to_pending
+    participants = @event.participants.where(last_sign_in_at: nil)
+    participants.each.with_index do |participant, index|
+      ParticipantMailer.invitation(participant).deliver_later(wait: index.seconds)
+      participant.update_column(:invitation_sent_at, Time.current)
+    end
+    redirect_to dashboard_event_path(@event), notice: "Reminders sent to all pending participants!"
   end
 
   def launch

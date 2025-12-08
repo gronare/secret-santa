@@ -171,9 +171,12 @@
       </div>
     <% end %>
 
-    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" onclick="alert('Send reminder to all inactive participants')">
-      Send Reminders to All Pending
-    </button>
+    <%= button_to "Send Reminders to All Pending",
+      send_reminders_to_pending_event_path(@event),
+      method: :post,
+      form: { data: { turbo_confirm: "Send reminder to all pending participants?" } },
+      class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+    %>
   </div>
 </div>
 

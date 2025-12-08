@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       post :draw_assignments
       post :launch
       post :send_reminder
+      post :send_reminders_to_pending
     end
 
     resource :settings, controller: "event_settings", only: [ :edit, :update ]
