@@ -21,8 +21,14 @@ default: &default
 
 
 development:
-  <<: *default
-  database: secret_santa_development
+  primary:
+    <<: *default
+    database: secret_santa_development
+  # Queue database (Solid Queue). Uses the same database by default.
+  queue:
+    <<: *default
+    database: secret_santa_development_queue
+    migrations_paths: db/queue_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -55,8 +61,13 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: secret_santa_test
+  primary:
+    <<: *default
+    database: secret_santa_test
+  queue:
+    <<: *default
+    database: secret_santa_test_queue
+    migrations_paths: db/queue_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -85,4 +96,8 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  url: <%= ENV["DATABASE_URL"] %>
+  primary:
+    url: <%= ENV["DATABASE_URL"] %>
+  queue:
+    url: <%= ENV["QUEUE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
+    migrations_paths: db/queue_migrate

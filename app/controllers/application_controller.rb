@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
   # HEY/Basecamp pattern: Set Current attributes for request-scoped data
   before_action :set_current_attributes
+  before_action :authenticate_with_magic_token
   before_action :set_current_participant, if: :participant_session?
 
   private
@@ -22,6 +23,25 @@ class ApplicationController < ActionController::Base
 
   def participant_session?
     session[:participant_id].present?
+  end
+
+  # Allows magic-link deep links to specific resources (e.g., wishlist)
+  # Only authenticates when both token and participant_id are present and belong together.
+  def authenticate_with_magic_token
+    token = params[:magic_token]
+    participant_id = params[:participant_id]
+    return if token.blank? || participant_id.blank?
+
+    user = User.find_by_token_for(:magic_link, token)
+    return unless user
+
+    participant = user.participants.find_by(id: participant_id)
+    return unless participant
+
+    reset_session
+    session[:user_id] = user.id
+    session[:participant_id] = participant.id
+    Current.participant = participant
   end
 
   # HEY pattern: No helper wrappers, access Current directly in views

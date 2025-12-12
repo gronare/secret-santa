@@ -112,6 +112,8 @@ class EventsController < ApplicationController
       ParticipantMailer.invitation(participant).deliver_later(wait: index.seconds)
     end
 
+    WishlistNotificationService.schedule_reminders_for_event!(@event)
+
     respond_to do |format|
       # Redirect to assignment page if organizer participates, otherwise dashboard
       redirect_path = @event.organizer_participates ? event_path(@event) : dashboard_event_path(@event)

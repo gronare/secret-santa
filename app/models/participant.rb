@@ -34,4 +34,8 @@ class Participant < ApplicationRecord
   def organizer?
     is_organizer?
   end
+
+  def gifter
+    Participant.find_by(assigned_to_id: id)
+  end
 end

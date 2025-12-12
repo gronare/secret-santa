@@ -1,6 +1,5 @@
 class Event < ApplicationRecord
-  has_many :participants, dependent: :destroy, strict_loading: true
-
+  has_many :participants, dependent: :destroy
   normalizes :organizer_email, with: ->(email) { email.strip.downcase }
 
   enum :status, { draft: "draft", active: "active", completed: "completed" }, default: :draft

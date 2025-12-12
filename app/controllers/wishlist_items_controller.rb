@@ -11,6 +11,7 @@ class WishlistItemsController < ApplicationController
     @wishlist_item = @participant.wishlist_items.build(wishlist_item_params)
 
     if @wishlist_item.save
+      WishlistNotificationService.schedule_ready_notification_after_change!(@participant)
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to wishlist_items_path, notice: "Item added to wishlist!" }
