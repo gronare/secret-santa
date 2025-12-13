@@ -1,21 +1,21 @@
 module EmailRateLimiter
-  DEFAULT_LIMIT  = 2
-  DEFAULT_PERIOD = 1.second
+  LIMIT = 2
 
-  def self.allowed?(limit: DEFAULT_LIMIT, period: DEFAULT_PERIOD, cache: Rails.cache)
-    bucket = (Time.current.utc.to_f / period).floor
-    key = "rate:emails:#{bucket}"
+  def self.wait!(cache: Rails.cache, now: -> { Time.now.utc }, sleep_fn: ->(t) { Kernel.sleep(t) }, limit: LIMIT)
+    loop do
+      t = now.call
+      key = "email_rate:#{t.strftime("%Y%m%d%H%M%S")}" # per-second bucket
 
-    count = cache.increment(
-      key,
-      1,
-      expires_in: period + 1.second,
-      initial: 0,
-      raw: true
-    )
+      count = cache.increment(key, 1, expires_in: 2.seconds, initial: 0)
 
-    count.nil? || count <= limit
-  rescue NoMethodError
-    true
+      # Fail open if cache isn't available / doesn't support increment semantics.
+      return if count.nil?
+      return if count <= limit
+
+      next_tick = t.change(usec: 0) + 1.second
+      sleep_time = next_tick - t
+      sleep_time = 0.01 if sleep_time < 0.01
+      sleep_fn.call(sleep_time)
+    end
   end
 end
