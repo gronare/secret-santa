@@ -1,6 +1,5 @@
 module Admin
   class StatsController < BaseController
-
     def show
       @event_counts = {
         total: Event.count,
