@@ -21,10 +21,11 @@ module Admin
       }
 
       now = Time.current
+      activity_scope = Participant.where("COALESCE(last_activity_at, last_sign_in_at) >= ?", now - 7.days)
       @activity_counts = {
-        logged_past_hour: Participant.where("last_sign_in_at >= ?", now - 1.hour).count,
-        logged_past_day: Participant.where("last_sign_in_at >= ?", now - 24.hours).count,
-        logged_past_week: Participant.where("last_sign_in_at >= ?", now - 7.days).count
+        logged_past_hour: activity_scope.where("COALESCE(last_activity_at, last_sign_in_at) >= ?", now - 1.hour).count,
+        logged_past_day: activity_scope.where("COALESCE(last_activity_at, last_sign_in_at) >= ?", now - 24.hours).count,
+        logged_past_week: activity_scope.count
       }
 
       @recent_events = Event.order(created_at: :desc).limit(5)

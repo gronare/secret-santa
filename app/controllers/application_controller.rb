@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :set_current_attributes
   before_action :authenticate_with_magic_token
   before_action :set_current_participant, if: :participant_session?
+  before_action :track_participant_activity, if: -> { Current.participant.present? }
 
   private
 
@@ -55,6 +56,20 @@ class ApplicationController < ActionController::Base
   def prevent_if_active
     if @event&.active? || @event&.completed?
       redirect_to organize_event_path(@event), alert: "Cannot modify an active or completed event."
+    end
+  end
+
+  def track_participant_activity
+    participant = Current.participant
+    now = Time.current
+
+    if participant.last_activity_at.nil? || participant.last_activity_at < 5.minutes.ago
+      participant.update_columns(
+        last_activity_at: now,
+        last_sign_in_at: participant.last_sign_in_at || now
+      )
+
+      participant.user&.update_columns(last_activity_at: now) if participant.user
     end
   end
 end
