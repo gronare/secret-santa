@@ -29,6 +29,11 @@ development:
     <<: *default
     database: secret_santa_development_queue
     migrations_paths: db/queue_migrate
+  # Cache database for Solid Cache
+  cache:
+    <<: *default
+    database: secret_santa_development_cache
+    migrations_paths: db/cache_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -68,6 +73,10 @@ test:
     <<: *default
     database: secret_santa_test_queue
     migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: secret_santa_test_cache
+    migrations_paths: db/cache_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -101,3 +110,6 @@ production:
   queue:
     url: <%= ENV["QUEUE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
     migrations_paths: db/queue_migrate
+  cache:
+    url: <%= ENV["CACHE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
+    migrations_paths: db/cache_migrate

@@ -10,7 +10,7 @@ class WishlistReadyNotificationJob < ApplicationJob
     gifter = participant.gifter
     return unless gifter
 
-    ParticipantMailer.wishlist_ready(gifter, participant).deliver_now
+    ParticipantMailer.wishlist_ready(gifter, participant).deliver_later
 
     participant.update!(
       wishlist_update_notified_at: Time.current,

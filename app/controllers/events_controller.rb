@@ -88,8 +88,8 @@ class EventsController < ApplicationController
 
   def send_reminders_to_pending
     participants = @event.participants.where(last_sign_in_at: nil)
-    participants.each.with_index do |participant, index|
-      ParticipantMailer.invitation(participant).deliver_later(wait: index.seconds)
+    participants.each do |participant|
+      ParticipantMailer.invitation(participant).deliver_later
       participant.update_column(:invitation_sent_at, Time.current)
     end
     redirect_to dashboard_event_path(@event), notice: "Reminders sent to all pending participants!"
@@ -106,10 +106,9 @@ class EventsController < ApplicationController
 
     # Only send invitations to participants with assignments (excludes non-participating organizer)
     # Stagger emails to respect Resend rate limit (2 emails/second)
-    @event.participants.with_assignments.each_with_index do |participant, index|
+    @event.participants.with_assignments.each do |participant|
       participant.update_column(:invitation_sent_at, Time.current)
-      # Delay each email by 1 second to stay under rate limit
-      ParticipantMailer.invitation(participant).deliver_later(wait: index.seconds)
+      ParticipantMailer.invitation(participant).deliver_later
     end
 
     WishlistNotificationService.schedule_reminders_for_event!(@event)

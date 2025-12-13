@@ -7,7 +7,7 @@ class WishlistReminderJob < ApplicationJob
     return if participant.wishlist_items.exists?
     return unless participant.wishlist_empty_reminder_token == token
 
-    ParticipantMailer.wishlist_reminder(participant).deliver_now
+    ParticipantMailer.wishlist_reminder(participant).deliver_later
 
     participant.update!(
       wishlist_empty_reminded_at: Time.current,

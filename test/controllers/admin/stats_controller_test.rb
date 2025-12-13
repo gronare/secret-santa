@@ -24,6 +24,7 @@ class Admin::StatsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "Admin Dashboard"
     assert_includes @response.body, "Events"
     assert_includes @response.body, "Queue"
+    assert_includes @response.body, "Recent Activity"
   end
 
   private
