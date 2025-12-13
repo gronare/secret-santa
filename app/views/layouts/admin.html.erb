@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Admin | Secret Santa" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-white border-b border-gray-200">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Admin</p>
+          <h1 class="text-xl font-semibold text-gray-900">Secret Santa</h1>
+        </div>
+        <nav class="space-x-4 text-sm font-medium text-gray-700">
+          <%= link_to "Stats", admin_stats_path, class: "hover:text-gray-900" %>
+          <%= link_to "Queue", admin_queue_path, class: "hover:text-gray-900" %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <%= yield %>
+    </main>
+  </body>
+</html>

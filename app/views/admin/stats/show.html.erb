@@ -1,0 +1,83 @@
+<div class="max-w-5xl mx-auto py-10 px-4">
+  <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="border rounded-lg p-4 shadow-sm bg-white">
+      <h2 class="text-lg font-semibold mb-3">Events</h2>
+      <ul class="space-y-1 text-gray-700">
+        <li>Total: <strong><%= @event_counts[:total] %></strong></li>
+        <li>Draft: <strong><%= @event_counts[:draft] %></strong></li>
+        <li>Active: <strong><%= @event_counts[:active] %></strong></li>
+        <li>Completed: <strong><%= @event_counts[:completed] %></strong></li>
+      </ul>
+    </div>
+
+    <div class="border rounded-lg p-4 shadow-sm bg-white">
+      <h2 class="text-lg font-semibold mb-3">Participants</h2>
+      <ul class="space-y-1 text-gray-700">
+        <li>Total: <strong><%= @participant_counts[:total] %></strong></li>
+        <li>With assignments: <strong><%= @participant_counts[:with_assignments] %></strong></li>
+        <li>Organizers: <strong><%= @participant_counts[:organizers] %></strong></li>
+      </ul>
+    </div>
+
+    <div class="border rounded-lg p-4 shadow-sm bg-white">
+      <h2 class="text-lg font-semibold mb-3">Wishlists</h2>
+      <ul class="space-y-1 text-gray-700">
+        <li>Items: <strong><%= @wishlist_counts[:items] %></strong></li>
+        <li>Participants with items: <strong><%= @wishlist_counts[:participants_with_items] %></strong></li>
+        <li>Participants without items: <strong><%= @wishlist_counts[:participants_without_items] %></strong></li>
+      </ul>
+    </div>
+
+    <div class="border rounded-lg p-4 shadow-sm bg-white">
+      <h2 class="text-lg font-semibold mb-3">Queue</h2>
+      <% if @queue_error.present? %>
+        <p class="text-red-600 text-sm">Queue stats unavailable: <%= @queue_error %></p>
+      <% else %>
+        <ul class="space-y-1 text-gray-700">
+          <li>Jobs: <strong><%= @queue_counts[:jobs] %></strong></li>
+          <li>Scheduled: <strong><%= @queue_counts[:scheduled] %></strong></li>
+          <li>Ready: <strong><%= @queue_counts[:ready] %></strong></li>
+          <li>Claimed: <strong><%= @queue_counts[:claimed] %></strong></li>
+          <li>Failed: <strong><%= @queue_counts[:failed] %></strong></li>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="border rounded-lg p-4 shadow-sm bg-white">
+      <h2 class="text-lg font-semibold mb-3">Recent Activity</h2>
+      <ul class="space-y-1 text-gray-700">
+        <li>Logged in past hour: <strong><%= @activity_counts[:logged_past_hour] %></strong></li>
+        <li>Logged in past day: <strong><%= @activity_counts[:logged_past_day] %></strong></li>
+        <li>Logged in past week: <strong><%= @activity_counts[:logged_past_week] %></strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border rounded-lg p-4 shadow-sm bg-white">
+    <h2 class="text-lg font-semibold mb-3">Recent Events</h2>
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead>
+        <tr>
+          <th class="text-left px-2 py-2 text-sm font-medium text-gray-600">Name</th>
+          <th class="text-left px-2 py-2 text-sm font-medium text-gray-600">Status</th>
+          <th class="text-left px-2 py-2 text-sm font-medium text-gray-600">Created</th>
+          <th class="text-left px-2 py-2 text-sm font-medium text-gray-600">Participants</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @recent_events.each do |event| %>
+          <tr>
+            <td class="px-2 py-2 text-gray-800"><%= event.name %></td>
+            <td class="px-2 py-2 capitalize text-gray-700"><%= event.status %></td>
+            <td class="px-2 py-2 text-gray-700"><%= l(event.created_at, format: :short) %></td>
+            <td class="px-2 py-2 text-gray-700"><%= event.participants.count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

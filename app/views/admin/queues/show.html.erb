@@ -1,0 +1,100 @@
+<div class="max-w-5xl mx-auto py-10 px-4">
+  <h1 class="text-3xl font-bold mb-6">Queue Dashboard</h1>
+
+  <% if flash[:notice].present? %>
+    <div class="mb-4 rounded bg-green-50 border border-green-200 text-green-800 px-3 py-2 text-sm">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+  <% if flash[:alert].present? %>
+    <div class="mb-4 rounded bg-red-50 border border-red-200 text-red-800 px-3 py-2 text-sm">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <% if @queue_error.present? %>
+      <div class="md:col-span-3 border border-red-200 bg-red-50 text-red-700 rounded-lg p-3 text-sm">
+        Queue stats unavailable: <%= @queue_error %>
+      </div>
+    <% else %>
+      <% @queue_counts.each do |label, value| %>
+        <div class="border rounded-lg p-4 shadow-sm bg-white">
+          <p class="text-sm text-gray-500 capitalize"><%= label %></p>
+          <p class="text-2xl font-semibold text-gray-900"><%= value %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-start">
+    <div class="border rounded-lg shadow-sm bg-white flex flex-col">
+      <div class="px-4 pt-4 pb-2">
+        <h2 class="text-lg font-semibold mb-3">Failed (latest 50)</h2>
+        <% if @failed_executions.empty? %>
+          <p class="text-gray-600 text-sm">No failed jobs.</p>
+        <% else %>
+          <ul class="space-y-3 text-gray-800">
+            <% @failed_executions.each do |failure| %>
+            <% error_hash = failure.error.with_indifferent_access %>
+            <% message = error_hash[:message] %>
+            <% snippet = message.to_s.lines.first.to_s.strip.truncate(140) %>
+            <li class="border border-gray-100 rounded p-2">
+              <div class="flex justify-between">
+                <span class="font-semibold"><%= failure.job&.class_name || "Unknown" %> (#<%= failure.job_id %>)</span>
+                <span class="text-sm text-gray-500"><%= l(failure.created_at, format: :short) %></span>
+              </div>
+              <p class="text-sm text-red-700"><%= snippet %></p>
+              <div class="mt-1">
+                <%= link_to "Details", failed_admin_queue_path(failure), class: "text-sm text-indigo-600 hover:text-indigo-800" %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+      </div>
+      <div class="mt-auto border-t border-gray-100 px-4 py-3 flex items-center justify-end space-x-2 bg-gray-50">
+        <%= button_to "Retry all failed", retry_failed_admin_queue_path, method: :post, class: "text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700", data: { turbo_confirm: "Retry all failed jobs?" } %>
+        <%= button_to "Discard all failed", discard_failed_admin_queue_path, method: :post, class: "text-sm px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700", data: { turbo_confirm: "Discard all failed jobs?" } %>
+      </div>
+    </div>
+
+    <div class="border rounded-lg p-4 shadow-sm bg-white">
+      <h2 class="text-lg font-semibold mb-3">Scheduled (next 50)</h2>
+      <% if @scheduled.empty? %>
+        <p class="text-gray-600 text-sm">No scheduled jobs.</p>
+      <% else %>
+        <ul class="space-y-2 text-gray-800">
+          <% @scheduled.each do |job| %>
+            <li class="flex justify-between border border-gray-100 rounded p-2">
+              <div>
+                <span class="font-semibold"><%= job.class_name %></span>
+                <span class="text-sm text-gray-500">(#<%= job.id %>)</span>
+              </div>
+              <span class="text-sm text-gray-500"><%= l(job.scheduled_at, format: :short) %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="border rounded-lg p-4 shadow-sm bg-white">
+    <h2 class="text-lg font-semibold mb-3">Ready (latest 50)</h2>
+    <% if @ready.empty? %>
+      <p class="text-gray-600 text-sm">No ready jobs.</p>
+    <% else %>
+      <ul class="space-y-2 text-gray-800">
+        <% @ready.each do |job| %>
+          <li class="flex justify-between border border-gray-100 rounded p-2">
+            <div>
+              <span class="font-semibold"><%= job.class_name %></span>
+              <span class="text-sm text-gray-500">(#<%= job.id %>)</span>
+            </div>
+            <span class="text-sm text-gray-500"><%= l(job.ready_execution.created_at, format: :short) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
