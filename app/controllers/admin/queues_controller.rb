@@ -34,8 +34,27 @@ module Admin
 
     def failed
       @failed_execution = SolidQueue::FailedExecution.includes(:job).find(params[:id])
+      @job_arguments = extract_arguments(@failed_execution.job)
     rescue ActiveRecord::RecordNotFound
       redirect_to admin_queue_path, alert: "Failed job not found."
+    end
+
+    private
+
+    def extract_arguments(job)
+      return {} unless job&.arguments.present?
+
+      args = ActiveJob::Arguments.deserialize(job.arguments)
+      participants = Array(args).select { |arg| arg.is_a?(Participant) }.map do |p|
+        { id: p.id, email: p.email, event_id: p.event_id }
+      end
+
+      {
+        positional: Array(args),
+        participants: participants
+      }
+    rescue StandardError
+      { raw: job.arguments }
     end
   end
 end
