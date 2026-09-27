@@ -44,6 +44,18 @@ class SolidQueueJobTest < ActiveSupport::TestCase
     end
   end
 
+  test "perform_later inside a batch tracks the job in that batch" do
+    participant = participants(:carol)
+
+    batch = SolidQueue::Batch.enqueue(description: "Wishlist reminders") do
+      WishlistReminderJob.perform_later(participant.id, "batch-token")
+    end
+
+    job = SolidQueue::Job.order(:id).last
+    assert_equal batch.id, job.batch_id
+    assert_equal [ job.id ], SolidQueue::BatchExecution.where(batch_id: batch.id).pluck(:job_id)
+  end
+
   private
 
   def clear_solid_queue
@@ -52,5 +64,6 @@ class SolidQueueJobTest < ActiveSupport::TestCase
     SolidQueue::FailedExecution.delete_all
     SolidQueue::ClaimedExecution.delete_all
     SolidQueue::Job.delete_all
+    SolidQueue::Batch.delete_all
   end
 end
