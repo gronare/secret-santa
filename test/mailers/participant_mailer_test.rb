@@ -8,7 +8,7 @@ class ParticipantMailerTest < ActionMailer::TestCase
 
     assert_equal "You're invited to #{event.name}!", mail.subject
     assert_equal [ participant.email ], mail.to
-    assert_equal [ "noreply@secretsanta.gronare.com" ], mail.from
+    assert_equal [ "noreply@gronare.com" ], mail.from
     assert_includes mail.html_part.body.to_s, participant.name
     assert_includes mail.html_part.body.to_s, "You're Invited!"
   end
@@ -22,7 +22,7 @@ class ParticipantMailerTest < ActionMailer::TestCase
 
     assert_equal "Your Secret Santa assignment for #{alice.event.name}", mail.subject
     assert_equal [ alice.email ], mail.to
-    assert_equal [ "noreply@secretsanta.gronare.com" ], mail.from
+    assert_equal [ "noreply@gronare.com" ], mail.from
     assert_includes mail.html_part.body.to_s, alice.name
     assert_includes mail.html_part.body.to_s, bob.name
     assert_includes mail.html_part.body.to_s, "buying a gift for"

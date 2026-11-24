@@ -7,7 +7,7 @@ class EventMailerTest < ActionMailer::TestCase
 
     assert_equal "Your Secret Santa Event: #{event.name}", mail.subject
     assert_equal [ event.organizer_email ], mail.to
-    assert_equal [ "noreply@secretsanta.gronare.com" ], mail.from
+    assert_equal [ "noreply@gronare.com" ], mail.from
     assert_match event.name, mail.body.encoded
     assert_match "Manage Your Event", mail.body.encoded
   end

@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  default from: "Secret Santa <noreply@secretsanta.gronare.com>"
+  default from: "Secret Santa <noreply@gronare.com>"
 
   def magic_link(user, magic_link)
     @user = user

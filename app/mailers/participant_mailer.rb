@@ -1,5 +1,5 @@
 class ParticipantMailer < ApplicationMailer
-  default from: "Secret Santa <noreply@secretsanta.gronare.com>"
+  default from: "Secret Santa <noreply@gronare.com>"
 
   def invitation(participant)
     @participant = participant

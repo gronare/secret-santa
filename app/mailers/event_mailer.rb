@@ -1,5 +1,5 @@
 class EventMailer < ApplicationMailer
-  default from: "Secret Santa <noreply@secretsanta.gronare.com>"
+  default from: "Secret Santa <noreply@gronare.com>"
 
   def organizer_welcome(event)
     @event = event
